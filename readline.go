@@ -19,8 +19,8 @@
 package gnureadline
 
 /*
-#cgo darwin CFLAGS: -I/opt/local/include
-#cgo darwin LDFLAGS: -L/opt/local/lib
+#cgo darwin CFLAGS: -I/usr/local/include -I/usr/local//Cellar/readline/8.0.0/include
+#cgo darwin LDFLAGS: -L/usr/local/lib -L/usr/local//Cellar/readline/8.0.0/lib
 #cgo LDFLAGS: -lreadline
 #include <stdio.h>
 #include <readline/readline.h>
@@ -29,7 +29,10 @@ package gnureadline
 */
 import "C"
 
-import ( "unsafe" ; "io" )
+import (
+	"io"
+	"unsafe"
+)
 
 /*
 Readline will read a line from the terminal and return it, using prompt
@@ -42,7 +45,7 @@ line.  By default, the line editing commands are similar to those of
 emacs.  A vi-style line editing interface is also available.
 
 */
-func Readline(prompt string, add_history ... bool) (string, error) {
+func Readline(prompt string, add_history ...bool) (string, error) {
 	c_prompt := C.CString(prompt)
 	defer C.free(unsafe.Pointer(c_prompt))
 	c_line := C.readline(c_prompt)
@@ -58,36 +61,36 @@ func Readline(prompt string, add_history ... bool) (string, error) {
 }
 
 /*
-     Modify the terminal settings for Readline's use, so `readline()'
-     can read a single character at a time from the keyboard.  The
-     META_FLAG argument should be non-zero if Readline should read
-     eight-bit input.
+   Modify the terminal settings for Readline's use, so `readline()'
+   can read a single character at a time from the keyboard.  The
+   META_FLAG argument should be non-zero if Readline should read
+   eight-bit input.
 */
 func Rl_prep_terminal(meta_flag int) {
 	C.rl_prep_terminal(C.int(meta_flag))
 }
 
 /*
-     Undo the effects of `rl_prep_terminal()', leaving the terminal in
-     the state in which it was before the most recent call to
-     `rl_prep_terminal()'.
+   Undo the effects of `rl_prep_terminal()', leaving the terminal in
+   the state in which it was before the most recent call to
+   `rl_prep_terminal()'.
 */
 func Rl_deprep_terminal() {
 	C.rl_deprep_terminal()
 }
 
 /*
-     Ring the terminal bell, obeying the setting of `bell-style'.
+   Ring the terminal bell, obeying the setting of `bell-style'.
 */
-func Rl_ding () int {
+func Rl_ding() int {
 	return int(C.rl_ding())
 }
 
 /*
-     Reinitialize Readline's idea of the terminal settings using
-     TERMINAL_NAME as the terminal type (e.g., `vt100').  If
-     TERMINAL_NAME is the empty string, the value of the `TERM' environment
-     variable is used.
+   Reinitialize Readline's idea of the terminal settings using
+   TERMINAL_NAME as the terminal type (e.g., `vt100').  If
+   TERMINAL_NAME is the empty string, the value of the `TERM' environment
+   variable is used.
 */
 func Rl_reset_terminal(terminal_name string) int {
 	if len(terminal_name) == 0 {
@@ -124,16 +127,16 @@ func Rl_editing_mode() EditingMode {
  True if this is real GNU readline. (It's probably true here.)
 */
 func Rl_gnu_readline_p() bool {
-	if (int(C.rl_gnu_readline_p) == 0) {
+	if int(C.rl_gnu_readline_p) == 0 {
 		return false
 	}
 	return true
 }
 
 /*
-     If non-zero, Readline gives values found in the `LINES' and
-     `COLUMNS' environment variables greater precedence than values
-     fetched from the kernel when computing the screen dimensions.
+   If non-zero, Readline gives values found in the `LINES' and
+   `COLUMNS' environment variables greater precedence than values
+   fetched from the kernel when computing the screen dimensions.
 */
 func Rl_prefer_env_winsize() int {
 	return int(C.rl_prefer_env_winsize)
@@ -154,26 +157,26 @@ func Rl_readline_library_version() string {
 }
 
 /*
-     This variable is set to a unique name by each application using
-     Readline.  The value allows conditional parsing of the inputrc file
+   This variable is set to a unique name by each application using
+   Readline.  The value allows conditional parsing of the inputrc file
 */
 func Rl_readline_name() string {
 	return C.GoString(C.rl_readline_name)
 }
 
 /*
-     The terminal type, used for initialization.  If not set by the
-     application, Readline sets this to the value of the `TERM'
-     environment variable the first time it is called.
+   The terminal type, used for initialization.  If not set by the
+   application, Readline sets this to the value of the `TERM'
+   environment variable the first time it is called.
 */
 func Rl_readline_terminal_name() string {
 	return C.GoString(C.rl_terminal_name)
 }
 
 /*
-     Return a string representing the value of the Readline variable
-     VARIABLE.  For boolean variables, this string is either `on' or
-     `off'.
+   Return a string representing the value of the Readline variable
+   VARIABLE.  For boolean variables, this string is either `on' or
+   `off'.
 */
 func Rl_variable_value(variable string) string {
 	c_variable := C.CString(variable)
@@ -182,11 +185,11 @@ func Rl_variable_value(variable string) string {
 }
 
 /*
-     An integer encoding the current version of the library.  The
-     encoding is of the form 0xMMMM, where MM is the two-digit major
-     version number, and MM is the two-digit minor version number.  For
-     example, for Readline-4.2, `rl_readline_version' would have the
-     value 0x0402.
+   An integer encoding the current version of the library.  The
+   encoding is of the form 0xMMMM, where MM is the two-digit major
+   version number, and MM is the two-digit minor version number.  For
+   example, for Readline-4.2, `rl_readline_version' would have the
+   value 0x0402.
 */
 func Rl_readline_version() int {
 	return int(C.rl_readline_version)
@@ -214,7 +217,7 @@ Set insert or overwrite mode for emacs mode.  Pass true to set insert
    mode, and flags to set overwrite mode.  */
 
 func Rl_insert_mode_set(set_insert bool) bool {
-	if (set_insert) {
+	if set_insert {
 		C.rl_insert_mode = C.int(1)
 	} else {
 		C.rl_insert_mode = C.int(0)

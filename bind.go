@@ -1,4 +1,4 @@
-/* 
+/*
    GNU Readline key binding and startup file support
 
    Copyright (C) 2013 Rocky Bernstein
@@ -20,9 +20,10 @@
 /* Thanks to Sebastien Binet from which these routines were started from. */
 
 package gnureadline
+
 /*
-#cgo darwin CFLAGS: -I/opt/local/include
-#cgo darwin LDFLAGS: -L/opt/local/lib
+#cgo darwin CFLAGS: -I/usr/local/include -I/usr/local//Cellar/readline/8.0.0/include
+#cgo darwin LDFLAGS: -L/usr/local/lib -L/usr/local//Cellar/readline/8.0.0/lib
 #cgo LDFLAGS: -lreadline
 #include <stdio.h>
 #include <readline/readline.h>
@@ -32,14 +33,14 @@ import "C"
 import "unsafe"
 import "syscall"
 
-/* 
+/*
 func GetKeymap() Keymap {
 	return C.GoString(C.rl_get_keymap())
 }
 */
 
-/**** 
-Should we include? 
+/****
+Should we include?
 *****/
 func GetKeymapNameFromEditMode() string {
 	return C.GoString(C.rl_get_keymap_name_from_edit_mode())
@@ -49,23 +50,25 @@ func SetKeymapNameFromEditMode() {
 	C.rl_set_keymap_from_edit_mode()
 }
 
-/* 
+/*
  Read the binding command from STRING and perform it.
  A key binding command looks like: Keyname: function-name\0,
  a variable binding command looks like: set variable value.
- A new-style keybinding looks like "\C-x\C-x": exchange-point-and-mark. 
- 
+ A new-style keybinding looks like "\C-x\C-x": exchange-point-and-mark.
+
  True is returned if there wasn't an error, false otherwise.
- */
+*/
 func ParseAndBind(s string) bool {
 	p := C.CString(s)
 	defer C.free(unsafe.Pointer(p))
 	success := C.rl_parse_and_bind(p)
-	if (success == 0) { return true }
+	if success == 0 {
+		return true
+	}
 	return false
 }
 
-/* 
+/*
  Parse a readline initialization file. The default filename is the
  last filename used.
 
@@ -82,16 +85,19 @@ func ReadInitFile(filename string) error {
 	c_filename := C.CString(filename)
 	defer C.free(unsafe.Pointer(c_filename))
 	errno := C.rl_read_init_file(c_filename)
-	if errno == 0 {	return nil }
+	if errno == 0 {
+		return nil
+	}
 	return syscall.Errno(errno)
 }
 
 /* Re-read the current keybindings file. */
 func ReReadInitFile() error {
-	/* readline has these two bogus "count" and "ignore" 
-	 parameters we have to supply. */
+	/* readline has these two bogus "count" and "ignore"
+	parameters we have to supply. */
 	errno := C.rl_re_read_init_file(-1, -1)
-	if errno == 0 {	return nil }
+	if errno == 0 {
+		return nil
+	}
 	return syscall.Errno(errno)
 }
-

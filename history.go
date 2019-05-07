@@ -20,9 +20,10 @@
 // This file contains things from readline/history.c
 
 package gnureadline
+
 /*
-#cgo darwin CFLAGS: -I/opt/local/include
-#cgo darwin LDFLAGS: -L/opt/local/lib
+#cgo darwin CFLAGS: -I/usr/local/include -I/usr/local//Cellar/readline/8.0.0/include
+#cgo darwin LDFLAGS: -L/usr/local/lib -L/usr/local//Cellar/readline/8.0.0/lib
 #cgo LDFLAGS: -lreadline
 #include <stdio.h>
 #include <readline/history.h>
@@ -47,7 +48,9 @@ func ClearHistory() {
 /* Return true if the history is stifled, false if it is not. */
 func HistoryIsStifled() bool {
 	var b = int(C.history_is_stifled())
-	if b == 0 { return false }
+	if b == 0 {
+		return false
+	}
 	return true
 }
 
@@ -123,7 +126,6 @@ func UnstifleHistory() int {
 func UsingHistory() {
 	C.using_history()
 }
-
 
 // I miss Ruby's attr_reader and attr_accessor
 
